@@ -1,0 +1,193 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Music Hub - Personal YouTube Music Engine</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.577.0/dist/umd/lucide.min.js"></script>
+</head>
+<body>
+  <div class="shell">
+    <!-- Header Navigation Bar -->
+    <header class="top">
+      <div class="top-inner">
+        <!-- Brand Identity -->
+        <div class="brand">
+          <span class="mark" aria-hidden="true"><i data-lucide="music-2"></i></span>
+          <div class="brand-text">
+            <div class="brand-name">Music Hub</div>
+            <span id="active-playlist-label" class="playlist-name">Playlist: Mặc định</span>
+          </div>
+        </div>
+
+        <!-- Central Search & Quick Add (Desktop) -->
+        <div class="header-center">
+          <label class="sr-only" for="desktop-search">Tìm bài hát</label>
+          <input id="desktop-search" class="input desktop-search" type="search" placeholder="Tìm kiếm bài hát, ca sĩ, ID...">
+          <button id="desktop-add" class="pill primary desktop-add" type="button">+ Thêm bài</button>
+        </div>
+
+        <!-- Global Actions & Mobile Trigger -->
+        <div class="header-actions">
+          <button id="menu-button" class="icon-btn mobile-menu-btn" type="button" aria-label="Mở danh mục navigation" title="Danh mục">
+            <i data-lucide="menu"></i>
+          </button>
+          <button id="settings-button" class="icon-btn header-settings-btn" type="button" aria-label="Mở cài đặt hệ thống" title="Cài đặt">
+            <i data-lucide="settings-2"></i>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="layout">
+      <!-- Responsive Sidebar / Mobile Slide-out Drawer -->
+      <aside id="sidebar" class="sidebar" aria-label="Điều hướng hệ thống">
+        <div class="mobile-sidebar-head">
+          <span class="brand-name">Menu Hub</span>
+          <button id="close-sidebar" class="icon-btn" type="button" aria-label="Đóng menu"><i data-lucide="x"></i></button>
+        </div>
+
+        <!-- Main Views Navigation -->
+        <nav class="side-nav" id="side-nav">
+          <button type="button" class="selected" data-target="home">
+            <i data-lucide="house"></i><span>Trang chủ</span>
+          </button>
+          <button type="button" data-target="favorite">
+            <i data-lucide="heart"></i><span>Yêu thích</span>
+          </button>
+        </nav>
+
+        <!-- Dynamic Playlist Section -->
+        <div id="playlists" class="playlist-section">
+          <div class="side-title-row">
+            <span class="side-title">PLAYLIST CỦA BẠN</span>
+            <button id="create-playlist-btn" class="icon-btn-sm" type="button" title="Tạo Playlist mới"><i data-lucide="plus"></i></button>
+          </div>
+          <nav class="side-nav" id="playlist-nav" aria-label="Danh sách Playlist">
+            <!-- Rendered dynamically via JS -->
+          </nav>
+
+          <button id="share-yt-btn" class="pill share-yt-btn" type="button">
+            <i data-lucide="share-2"></i> Chia sẻ lên YouTube
+          </button>
+        </div>
+
+        <!-- Real-time Recent History Section -->
+        <section id="recent" class="glass recent" aria-labelledby="recent-title">
+          <h2 id="recent-title" class="recent-heading">Đã nghe gần đây</h2>
+          <div id="recent-list">
+            <p class="empty-history">Chưa có lịch sử phát</p>
+          </div>
+        </section>
+      </aside>
+
+      <!-- Main Player Workspace -->
+      <main id="player">
+        <!-- Quick Add Form (Mobile View) -->
+        <form id="add-form" class="mobile-add" autocomplete="off">
+          <label for="add-input" class="sr-only">Link hoặc tên bài hát</label>
+          <input id="add-input" class="input" placeholder="Dán link YouTube (watch, youtu.be, embed)...">
+          <div class="mobile-add-btn-group">
+            <button id="paste-button" class="pill" type="button">📋 Dán</button>
+            <button id="add-button" class="pill primary" type="submit">+ Thêm</button>
+          </div>
+        </form>
+        <p id="feedback" class="feedback" role="status" aria-live="polite"></p>
+
+        <!-- Video Player Display Card -->
+        <section class="glass player-card" aria-labelledby="song-title">
+          <div id="art" class="art">
+            <span id="playing-tag" class="art-tag">ĐANG PHÁT</span>
+            <div id="yt-player-display" class="yt-video-frame"></div>
+            
+            <div class="bars" aria-hidden="true">
+              <span style="--h:15px;--d:-.2s"></span><span style="--h:28px;--d:-.5s"></span><span style="--h:20px;--d:-.1s"></span>
+              <span style="--h:25px;--d:-.4s"></span><span style="--h:12px;--d:-.3s"></span><span style="--h:30px;--d:-.6s"></span>
+              <span style="--h:17px;--d:-.2s"></span>
+            </div>
+          </div>
+
+          <div class="song-head">
+            <div class="min-w-0">
+              <h1 id="song-title">Vui lòng chọn hoặc thêm bài hát</h1>
+              <p id="song-artist" class="artist">YouTube Music Engine</p>
+            </div>
+            <span id="play-status" class="status">Sẵn sàng</span>
+          </div>
+
+          <!-- Progress Bar & Timeline -->
+          <div class="timeline">
+            <span id="elapsed">00:00</span>
+            <input id="progress" type="range" min="0" max="100" value="0" aria-label="Tua bài hát">
+            <span id="duration">00:00</span>
+          </div>
+
+          <!-- Main Playback Controls -->
+          <div class="main-controls">
+            <button id="previous" class="icon-btn" type="button" aria-label="Bài trước"><i data-lucide="skip-back"></i></button>
+            <button id="play" class="big-play" type="button" aria-label="Phát" aria-pressed="false"><i data-lucide="play"></i></button>
+            <button id="next" class="icon-btn" type="button" aria-label="Bài tiếp"><i data-lucide="skip-forward"></i></button>
+          </div>
+
+          <!-- Secondary Mode Controls -->
+          <div class="secondary-controls">
+            <button id="shuffle" class="icon-btn" type="button" aria-label="Phát ngẫu nhiên" aria-pressed="false"><i data-lucide="shuffle"></i></button>
+            <button id="loop" class="icon-btn" type="button" aria-label="Lặp lại" aria-pressed="false"><i data-lucide="repeat-2"></i></button>
+            <button id="favorite" class="icon-btn" type="button" aria-label="Yêu thích bài hát" aria-pressed="false"><i data-lucide="heart"></i></button>
+            <button id="volume-button" class="icon-btn desktop-extra" type="button" aria-label="Điều chỉnh âm lượng"><i data-lucide="volume-2"></i></button>
+            <button id="speed" class="icon-btn speed" type="button" aria-label="Tốc độ phát 1x">1x</button>
+          </div>
+        </section>
+      </main>
+
+      <!-- Queue Column -->
+      <aside id="queue" class="glass queue-panel" aria-labelledby="queue-heading">
+        <div class="queue-top">
+          <h2 id="queue-heading" class="queue-heading">Hàng đợi phát</h2>
+          <span id="queue-count" class="badge">0 bài</span>
+        </div>
+        <label class="sr-only" for="queue-filter">Lọc hàng đợi</label>
+        <input id="queue-filter" class="input queue-filter" type="search" placeholder="Lọc nhanh bài hát...">
+        <div id="queue-list" class="queue-list"></div>
+        <p id="queue-empty" class="empty hidden">Không tìm thấy bài hát phù hợp.</p>
+      </aside>
+    </div>
+  </div>
+
+  <!-- Settings Drawer Modal -->
+  <div id="backdrop" class="backdrop hidden"></div>
+  <aside id="drawer" class="drawer hidden" role="dialog" aria-modal="true" aria-labelledby="drawer-title" aria-hidden="true">
+    <div class="drawer-head">
+      <h2 id="drawer-title" class="drawer-heading">Cài đặt hệ thống</h2>
+      <button id="close-drawer" class="icon-btn" type="button" aria-label="Đóng cài đặt"><i data-lucide="x"></i></button>
+    </div>
+    <div class="volume-row">
+      <label for="volume-drawer">Âm lượng mặc định</label>
+      <input id="volume-drawer" class="volume-control" type="range" min="0" max="100" value="70">
+      <span class="volume-value">70%</span>
+    </div>
+    <div class="setting-row">
+      <span>Tự động bỏ qua video lỗi</span>
+      <button class="switch setting-toggle" data-setting="skip" type="button" aria-pressed="true"></button>
+    </div>
+    <div class="setting-row">
+      <span>Tự động xoá video lỗi</span>
+      <button class="switch setting-toggle" data-setting="remove" type="button" aria-pressed="false"></button>
+    </div>
+    <div class="setting-row">
+      <span>Khôi phục phiên nghe trước</span>
+      <button class="switch setting-toggle" data-setting="restore" type="button" aria-pressed="true"></button>
+    </div>
+    <div class="drawer-actions">
+      <button id="import-button" class="pill" type="button">Import JSON</button>
+      <button id="export-button" class="pill primary" type="button">Export JSON</button>
+    </div>
+    <input id="import-file" class="sr-only" type="file" accept=".json,application/json">
+    <p id="drawer-feedback" class="feedback" role="status" aria-live="polite"></p>
+  </aside>
+
+  <script src="script.js"></script>
+</body>
+</html>
